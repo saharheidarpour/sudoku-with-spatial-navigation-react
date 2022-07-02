@@ -9,7 +9,7 @@ import {
 } from "./style";
 import { withFocusable } from "@noriginmedia/react-spatial-navigation";
 import React from "react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback,createRef } from "react";
 const problem = [
   "","1","","","4","","","5","",
   "4","","7","","","","6","","2",
@@ -31,8 +31,8 @@ const solved = [
 "3","4","5","9","6","7","8","2","1",
 "1","7","8","5","2","4","9","3","6",
 ];
-const TableColumnComponent = ({ focused, children }) => {
-  return <TableColumn focused={focused}>{children}</TableColumn>;
+const TableColumnComponent = ({ focused, children ,columnRef}) => {
+  return <TableColumn ref={columnRef} focused={focused}>{children}</TableColumn>;
 };
 
 const TableColumnFocusable = withFocusable()(TableColumnComponent);
@@ -41,9 +41,13 @@ const SudokuGame = ({ setFocus }) => {
   const [position, setPosition] = useState();
   const [result, setResult] = useState();
   const [data, setData] = useState(problem);
-
-  const onBecameFocusedHandler = (e) => {
+  let columnRefs=useRef([]);
+  columnRefs.current = [...Array(36)].map((element, i) => columnRefs.current[i] ?? createRef()); 
+  const onBecameFocusedHandler = (e,ref) => {
     setPosition(e);
+    if(ref.current){
+      ref.current.children[0].focus();
+    }
   };
 
   const onArrowPressHandler = (direction) => {};
@@ -62,6 +66,7 @@ const SudokuGame = ({ setFocus }) => {
     console.log(data);
     setResult(result);
   };
+  // when user changes value on cell
   const changeData = (index, e) => {
     data[index] = e.target.value;
     setData([...data]);
@@ -74,8 +79,9 @@ const SudokuGame = ({ setFocus }) => {
             <TableRow>
               {[...Array(9)].map((x, j) => (
                 <TableColumnFocusable
+                columnRef={columnRefs.current[i * 9 + j]}
                   onArrowPress={onArrowPressHandler}
-                  onBecameFocused={onBecameFocusedHandler}
+                  onBecameFocused={(e)=>onBecameFocusedHandler(e,columnRefs.current[i * 9 + j])}
                   key={i.toString() + j.toString()}
                 >
                   <Input
