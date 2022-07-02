@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Sudoku Game with react and spatial navigation library
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+you can simply navigate between columns with arrow keys
 
 ## Available Scripts
 
